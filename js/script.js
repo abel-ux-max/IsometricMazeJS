@@ -7,12 +7,82 @@ let offScreenCTX = offScreenCVS.getContext("2d");
 offScreenCVS.width = 30;
 offScreenCVS.height = 30;
 
+//---------Canvas as Background-----------//
+const isMobile = window.innerWidth <= 768;
+let bg = document.querySelector(".bg"),
+bgCtx = bg.getContext("2d"),
+
+//sharpen * 2.5
+bgw = (bg.width = window.innerWidth * 2.5);
+bgh = (bg.height = window.innerHeight * 2.5);
+bg.style.width = (window.innerWidth / 1.2) + "px";
+bg.style.height = (window.innerHeight / 1.2) + "px";
+
+// bgCtx.imageSmoothingEnabled = false;
+// bgCtx.drawImage(offScreenCVS,0,0, 1000, 1000)
+//draw bg
+// bgCtx.fillStyle = "#282c34"
+// bgCtx.fillRect(0,0,bgw,bgh)
+// let yO = bgh*-0.7;
+
+let xO = bgw * 0.5;
+let yO = bgh * 0.1;
+let cellSize = isMobile ? 22 : 44;
+let perspective = 0.7;
 let grid = [];
 
-let player = {
+const colorOptions = [
+  { label: "Gold", value: "#FFD700" },
+  { label: "Cyan", value: "#00FFFF" },
+  { label: "Orange", value: "#FF6600" },
+  { label: "Pink", value: "#FF69B4" },
+  { label: "Green", value: "#71d171" },
+];
+
+Swal.fire({
+  title: "MAZE GAME",
+  html: `
+    <p style="color:#71d171; font-family:'Audiowide',sans-serif; margin-bottom:16px;">Choose your cube colour</p>
+    <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+      ${colorOptions.map(c => `
+        <div class="color-pick" data-color="${c.value}" style="
+          width:44px; height:44px; background:${c.value};
+          border-radius:6px; cursor:pointer; border: 3px solid transparent;
+          transition: border 0.2s;
+        " title="${c.label}"></div>
+      `).join("")}
+    </div>
+    <p id="picked-label" style="color:#aaa; font-family:'Audiowide',sans-serif; margin-top:12px; font-size:0.85em;">None selected</p>
+  `,
+  background: "#1e2127",
+  color: "#71d171",
+  confirmButtonText: "START",
+  confirmButtonColor: "#71d171",
+  allowOutsideClick: false,
+  didOpen: () => {
+    window._selectedColor = player.color; // store globally
+    document.querySelectorAll(".color-pick").forEach(el => {
+      el.addEventListener("click", () => {
+        document.querySelectorAll(".color-pick").forEach(e => e.style.border = "3px solid transparent");
+        el.style.border = "3px solid white";
+        window._selectedColor = el.dataset.color; // update global on click
+        document.getElementById("picked-label").textContent = el.title;
+      });
+    });
+  },
+  preConfirm: () => {
+    return window._selectedColor; // return chosen colour
+  }
+}).then((result) => {
+  player.color = result.value; // guaranteed set before initMaze
+  initMaze();
+});
+
+
+ let player = {
   x: 1,
   y: 1,
-  color: "#FFD700"
+  color:  "#71d171"  // default to original green if somehow no selection;
 }
 
 let startPoint = {
@@ -26,6 +96,8 @@ let endPoint = {
   y: 30,
   color: "#FF0000"  // Red
 }
+
+// Colour picker at start
 
 
 // Eller's algorithm
@@ -222,9 +294,10 @@ function get2DArray() {
   }
 }
 
+function initMaze() {
+  
 let mazeData = generateEllerMaze();
 get2DArray();
-
 // Set start and end points based on generated entrance/exit
 startPoint.x = mazeData.entranceX;
 startPoint.y = 0;
@@ -250,30 +323,11 @@ grid[player.y][player.x].color = player.color;
 console.log("Player spawned at:", player.x, player.y, "| Color:", player.color);
 console.log("=========================");
 
-//---------Canvas as Background-----------//
-const isMobile = window.innerWidth <= 768;
-let bg = document.querySelector(".bg"),
-bgCtx = bg.getContext("2d"),
 
-//sharpen * 2.5
-bgw = (bg.width = window.innerWidth * 2.5);
-bgh = (bg.height = window.innerHeight * 2.5);
-bg.style.width = (window.innerWidth / 1.2) + "px";
-bg.style.height = (window.innerHeight / 1.2) + "px";
-
-// bgCtx.imageSmoothingEnabled = false;
-// bgCtx.drawImage(offScreenCVS,0,0, 1000, 1000)
-//draw bg
-// bgCtx.fillStyle = "#282c34"
-// bgCtx.fillRect(0,0,bgw,bgh)
-// let yO = bgh*-0.7;
-
-let xO = bgw * 0.5;
-let yO = bgh * 0.1;
-let cellSize = isMobile ? 22 : 44;
-let perspective = 0.7;
 drawMaze();
+resetTimer();
 
+}
 /*draw2DMaze();*/
 function drawMaze() {
 
@@ -440,17 +494,46 @@ function movePlayer(newX, newY) {
 
     // Check if reached end after rendering
     if (player.x === endPoint.x && player.y === endPoint.y) {
-      setTimeout(() => {
-        alert(`You reached the end in ${timerSeconds}s!`);
+  setTimeout(() => {
+    Swal.fire({
+      title: "🏆 MAZE COMPLETE!",
+      html: `
+        <p style="font-family:'Audiowide',sans-serif; color:#71d171; font-size:1.1em;">
+          You escaped in <strong style="color:white">${timerSeconds}s</strong>
+        </p>
+        <p style="font-family:'Audiowide',sans-serif; color:#aaa; font-size:0.85em; margin-top:8px;">
+          Think you can beat that?
+        </p>
+      `,
+      background: "#1e2127",
+      color: "#71d171",
+      confirmButtonText: "PLAY AGAIN",
+      confirmButtonColor: "#71d171",
+      showCancelButton: true,
+      cancelButtonText: "QUIT",
+      cancelButtonColor: "#444",
+      allowOutsideClick: false,
+    }).then((result) => {
+      if (result.isConfirmed) {
         grid[player.y][player.x].color = "transparent";
+        mazeData = generateEllerMaze();
+        get2DArray();
+        startPoint.x = mazeData.entranceX;
+        startPoint.y = 0;
+        endPoint.x = mazeData.exitX;
+        endPoint.y = offScreenCVS.height;
+        grid[startPoint.y][startPoint.x].color = "transparent";
+        grid[endPoint.y][endPoint.x].color = "transparent";
         player.x = startPoint.x;
         player.y = startPoint.y;
         grid[player.y][player.x].color = player.color;
         bgCtx.clearRect(0, 0, bgw, bgh);
         drawMaze();
         resetTimer();
-      }, 500);
-    }
+      }
+    });
+  }, 500);
+}
   }
 }
 
