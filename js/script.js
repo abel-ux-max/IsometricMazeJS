@@ -255,7 +255,7 @@ console.log("=========================");
 let bg = document.querySelector(".bg"),
   bgCtx = bg.getContext("2d"),
   //sharpen * 4
-  bgw = (bg.width = window.innerWidth * 4),
+  bgw = (bg.width = window.innerWidth * 4 );
   bgh = (bg.height = window.innerHeight * 4);
 bg.style.width = window.innerWidth + "px";
 bg.style.height = window.innerHeight + "px";
