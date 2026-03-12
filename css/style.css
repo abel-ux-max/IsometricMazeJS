@@ -1,21 +1,120 @@
-*{
+.audiowide-regular {
+  font-family: "Audiowide", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+* {
   padding: 0;
   margin: 0;
 }
-#title{
-  color:#71d171;
-  text-align: center;
-  padding:1em;
-}
-body {
-  background-color: #282c34;
-  overflow: hidden;
-}
-.maze{
-  
-  position: fixed;
-  overflow: auto;
-}
-.bg{
 
+
+#title {
+  color: #71d171;
+  text-align: center;
+  padding: 1em;
+  width: 30vw;
+  margin: 1vh auto;
+  border-radius: 6px;
+  background-color: #1e2127;
+  border: 2px solid #71d171;
+  font-family: "Audiowide", sans-serif;
+  text-shadow: 2px 2px 2px #468230;
+    -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+}
+
+body {
+  
+  overflow: hidden;
+  background-color: #2f343d;
+  background-image: url(background.png);
+}
+
+#maze {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.bg {
+  display: block;
+  margin: 0 auto;
+  
+}
+#ui {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+
+#stats {
+  color: #71d171;
+  font-family: "Audiowide", sans-serif;
+  font-size: 1.1em;
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+}
+
+#new-maze-btn {
+  background-color: #1e2127;
+  color: #71d171;
+  border: 2px solid #71d171;
+  border-radius: 6px;
+  padding: 0.5em 1.5em;
+  font-family: "Audiowide", sans-serif;
+  cursor: pointer;
+  font-size: 1em;
+   -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+ 
+}
+
+#new-maze-btn:hover {
+  background-color: #71d171;
+  color: #1e2127;
+}
+
+#dpad {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+   -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+}
+
+#dpad-middle {
+  display: flex;
+  gap: 3.5em;
+   -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+}
+
+.dpad-btn {
+  width: 56px;
+  height: 56px;
+  background-color: #1e2127;
+  color: #71d171;
+  border: 2px solid #71d171;
+  border-radius: 6px;
+  font-size: 1.4em;
+  cursor: pointer;
+}
+
+.dpad-btn:active {
+  background-color: #71d171;
+  color: #1e2127;
 }

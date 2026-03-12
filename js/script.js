@@ -38,6 +38,7 @@ function generateEllerMaze() {
     offScreenCVS.width,
     offScreenCVS.height
   );
+
   let cells = [];
   //Generate Maze
   for (let y = 0; y < imageData.height; y++) {
@@ -165,17 +166,17 @@ function generateEllerMaze() {
     }
   }
   recursiveDrawMaze();
-  
+
   // Generate random entrance and exit at odd indices (where cells actually exist)
   let entranceX = 1 + Math.floor(Math.random() * ((offScreenCVS.width - 2) / 2)) * 2;
   let exitX = 1 + Math.floor(Math.random() * ((offScreenCVS.width - 2) / 2)) * 2;
-  
+
   // Carve entrance at top (y=0) at entranceX
   offScreenCTX.clearRect(entranceX, 0, 1, 1);
-  
+
   // Carve exit at bottom (y=height-1) at exitX
   offScreenCTX.clearRect(exitX, imageData.height - 1, 1, 1);
-  
+
   return { entranceX, exitX };
 }
 
@@ -207,9 +208,8 @@ function get2DArray() {
   for (let i = 0; i < imageData.data.length; i += 4) {
     let x = (i / 4) % offScreenCVS.width,
       y = (i / 4 - x) / offScreenCVS.width;
-    let color = `rgba(${imageData.data[i]}, ${imageData.data[i + 1]}, ${
-      imageData.data[i + 2]
-    }, ${imageData.data[i + 3]})`;
+    let color = `rgba(${imageData.data[i]}, ${imageData.data[i + 1]}, ${imageData.data[i + 2]
+      }, ${imageData.data[i + 3]})`;
     switch (color) {
       case "rgba(0, 0, 0, 255)":
         //black pixel
@@ -251,14 +251,15 @@ console.log("Player spawned at:", player.x, player.y, "| Color:", player.color);
 console.log("=========================");
 
 //---------Canvas as Background-----------//
-
+const isMobile = window.innerWidth <= 768;
 let bg = document.querySelector(".bg"),
-  bgCtx = bg.getContext("2d"),
-  //sharpen * 4
-  bgw = (bg.width = window.innerWidth * 4 );
-  bgh = (bg.height = window.innerHeight * 4);
-bg.style.width = window.innerWidth + "px";
-bg.style.height = window.innerHeight + "px";
+bgCtx = bg.getContext("2d"),
+
+//sharpen * 2.5
+bgw = (bg.width = window.innerWidth * 2.5);
+bgh = (bg.height = window.innerHeight * 2.5);
+bg.style.width = (window.innerWidth / 1.2) + "px";
+bg.style.height = (window.innerHeight / 1.2) + "px";
 
 // bgCtx.imageSmoothingEnabled = false;
 // bgCtx.drawImage(offScreenCVS,0,0, 1000, 1000)
@@ -269,12 +270,13 @@ bg.style.height = window.innerHeight + "px";
 
 let xO = bgw * 0.5;
 let yO = bgh * 0.1;
-let cellSize = 70;
+let cellSize = isMobile ? 22 : 44;
 let perspective = 0.7;
 drawMaze();
-draw2DMaze();
+
+/*draw2DMaze();*/
 function drawMaze() {
-  
+
   for (let y = 0; y < grid.length; y++) {
     for (let x = 0; x < grid[y].length; x++) {
       let xPos = xO + cellSize * (x - y);
@@ -292,48 +294,48 @@ function drawMaze() {
         grid[y][x].color,
         perspective
       );
-      
+
     }
-    
+
   }
-  
+
 }
 
 function draw2DMaze() {
   // Draw 2D overhead view of maze in top-left corner
   let maze2DSize = 500;
   let cellSizeSmall = maze2DSize / grid.length;
-  
+
   for (let y = 0; y < grid.length; y++) {
     for (let x = 0; x < grid[y].length; x++) {
       let xPos = x * cellSizeSmall;
       let yPos = y * cellSizeSmall;
-      
+
       if (grid[y][x].color === "transparent") {
         bgCtx.fillStyle = "#FFFFFF";
       } else {
         bgCtx.fillStyle = "#000000";
       }
-      
+
       bgCtx.fillRect(xPos, yPos, cellSizeSmall, cellSizeSmall);
       bgCtx.strokeStyle = "#CCCCCC";
       bgCtx.lineWidth = 0.5;
       bgCtx.strokeRect(xPos, yPos, cellSizeSmall, cellSizeSmall);
     }
   }
-  
+
   // Draw player on 2D map
   let playerX2D = player.x * cellSizeSmall;
   let playerY2D = player.y * cellSizeSmall;
   bgCtx.fillStyle = player.color;
   bgCtx.fillRect(playerX2D, playerY2D, cellSizeSmall, cellSizeSmall);
-  
+
   // Draw entrance marker (green)
   let entranceX2D = startPoint.x * cellSizeSmall;
   let entranceY2D = startPoint.y * cellSizeSmall;
   bgCtx.fillStyle = "#00FF00";
   bgCtx.fillRect(entranceX2D, entranceY2D, cellSizeSmall, cellSizeSmall);
-  
+
   // Draw exit marker (red)
   let exitX2D = endPoint.x * cellSizeSmall;
   let exitY2D = endPoint.y * cellSizeSmall;
@@ -354,6 +356,7 @@ function drawPlayer() {
     player.color,
     perspective
   );
+
 }
 
 function shadeColor(color, percent) {
@@ -415,24 +418,6 @@ function drawCube(x, y, wx, wy, h, color, per) {
 }
 
 //Canvas Events
-bg.addEventListener("click", handleCanvasClick);
-
-function handleCanvasClick(e) {
-  //Get coordinates on canvas, offset by origin
-  let xCanvas = e.offsetX * 4 - xO;
-  let yCanvas = e.offsetY * 4 - yO;
-  //Get inverse of isometric transformation
-  let invX = 0.7 + (yCanvas / perspective + xCanvas) / (2 * cellSize);
-  let invY = 0.7 + (yCanvas / perspective - xCanvas) / (2 * cellSize);
-  let x = Math.ceil(invX);
-  let y = Math.ceil(invY);
-  if (grid[y][x].color === "transparent") {
-    grid[y][x].color = "#b94f4f";
-    bgCtx.clearRect(0, 0, bgw, bgh);
-    drawMaze();
-    draw2DMaze();
-  }
-}
 
 
 function movePlayer(newX, newY) {
@@ -451,20 +436,19 @@ function movePlayer(newX, newY) {
     grid[player.y][player.x].color = player.color;
     bgCtx.clearRect(0, 0, bgw, bgh);
     drawMaze();
-    draw2DMaze();
+    /*draw2DMaze();*/
 
     // Check if reached end after rendering
     if (player.x === endPoint.x && player.y === endPoint.y) {
       setTimeout(() => {
-        alert("You reached the end!");
-        // Reset player to start
+        alert(`You reached the end in ${timerSeconds}s!`);
         grid[player.y][player.x].color = "transparent";
         player.x = startPoint.x;
         player.y = startPoint.y;
         grid[player.y][player.x].color = player.color;
         bgCtx.clearRect(0, 0, bgw, bgh);
         drawMaze();
-        draw2DMaze();
+        resetTimer();
       }, 500);
     }
   }
@@ -483,3 +467,49 @@ function handleKey(e) {
 
   movePlayer(newX, newY);
 }
+
+// Timer
+let timerSeconds = 0;
+let timerInterval = setInterval(() => {
+  timerSeconds++;
+  document.getElementById("timer").textContent = `Time: ${timerSeconds}s`;
+}, 1000);
+
+function resetTimer() {
+  timerSeconds = 0;
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    timerSeconds++;
+    document.getElementById("timer").textContent = `Time: ${timerSeconds}s`;
+  }, 1000);
+}
+
+// New maze button
+document.getElementById("new-maze-btn").addEventListener("click", () => {
+  grid[player.y][player.x].color = "transparent";
+  mazeData = generateEllerMaze();
+  get2DArray();
+  startPoint.x = mazeData.entranceX;
+  startPoint.y = 0;
+  endPoint.x = mazeData.exitX;
+  endPoint.y = offScreenCVS.height;
+  grid[startPoint.y][startPoint.x].color = "transparent";
+  grid[endPoint.y][endPoint.x].color = "transparent";
+  player.x = startPoint.x;
+  player.y = startPoint.y;
+  grid[player.y][player.x].color = player.color;
+  bgCtx.clearRect(0, 0, bgw, bgh);
+  drawMaze();
+  resetTimer();
+});
+
+// D-pad buttons
+document.getElementById("up").addEventListener("click", () => movePlayer(player.x, player.y - 1));
+document.getElementById("down").addEventListener("click", () => movePlayer(player.x, player.y + 1));
+document.getElementById("left").addEventListener("click", () => movePlayer(player.x - 1, player.y));
+document.getElementById("right").addEventListener("click", () => movePlayer(player.x + 1, player.y));
+
+
+window.addEventListener("resize", () => {
+  location.reload(); // simplest approach, regenerates maze at new size
+});

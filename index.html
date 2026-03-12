@@ -1,19 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel = "stylesheet" href="css/style.css">
-    <title>Maze</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" href="img/favicon.ico" type="image/icon-x">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Audiowide&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap"
+        rel="stylesheet">
+    <title>Maze Game</title>
 </head>
+
 <body>
+    <div id="stats">
+            <span id="timer">Time: 0s</span>
+        </div>
     <div id="title">
         <h1>MAZE GAME</h1>
     </div>
+    
     <div id="maze">
-        
-    <canvas class="bg" width="1024px" height="640px"></canvas>
+        <canvas class="bg" width="1024px" height="640px"></canvas>
+    </div>
+    
+    <div id="ui">
+        <button id="new-maze-btn">New Maze</button>
+        <div id="dpad">
+            <button class="dpad-btn" id="up">▲</button>
+            <div id="dpad-middle">
+                <button class="dpad-btn" id="left">◀</button>
+                
+                <button class="dpad-btn" id="right">▶</button>
+            </div>
+            <button class="dpad-btn" id="down">▼</button>
+        </div>
     </div>
     <script src="js/script.js"></script>
 </body>
+
 </html>
