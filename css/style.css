@@ -97,7 +97,7 @@ body {
 
 #dpad-middle {
   display: flex;
-  gap: 3.5em;
+  gap: 4px;
    -webkit-user-select: none; /* Safari */
   -ms-user-select: none; /* IE 10 and IE 11 */
   user-select: none; /* Standard syntax */

@@ -28,7 +28,8 @@ bg.style.height = (window.innerHeight / 1.2) + "px";
 let xO = bgw * 0.5;
 let yO = bgh * 0.1;
 let cellSize = isMobile ? 22 : 44;
-let perspective = 0.7;
+let perspective = 0.8
+;
 let grid = [];
 
 const colorOptions = [
@@ -74,7 +75,8 @@ Swal.fire({
     return window._selectedColor; // return chosen colour
   }
 }).then((result) => {
-  player.color = result.value; // guaranteed set before initMaze
+  player.color = result.value; // setting to the selected colour before initializing the player and maze
+  
   initMaze();
 });
 
@@ -355,7 +357,7 @@ function drawMaze() {
 
 }
 
-function draw2DMaze() {
+function draw2DMaze() { // Made for testing the 3d maze 
   // Draw 2D overhead view of maze in top-left corner
   let maze2DSize = 500;
   let cellSizeSmall = maze2DSize / grid.length;
@@ -494,7 +496,7 @@ function movePlayer(newX, newY) {
 
     // Check if reached end after rendering
     if (player.x === endPoint.x && player.y === endPoint.y) {
-  setTimeout(() => {
+  
     Swal.fire({
       title: "🏆 MAZE COMPLETE!",
       html: `
@@ -532,7 +534,6 @@ function movePlayer(newX, newY) {
         resetTimer();
       }
     });
-  }, 500);
 }
   }
 }
@@ -552,11 +553,13 @@ function handleKey(e) {
 }
 
 // Timer
-let timerSeconds = 0;
-let timerInterval = setInterval(() => {
-  timerSeconds++;
-  document.getElementById("timer").textContent = `Time: ${timerSeconds}s`;
-}, 1000);
+  let timerSeconds = 0;
+  let timerInterval = setInterval(() => {
+    timerSeconds++;
+    document.getElementById("timer").textContent = `Time: ${timerSeconds}s`;
+  }, 1000);
+
+
 
 function resetTimer() {
   timerSeconds = 0;
@@ -596,3 +599,4 @@ document.getElementById("right").addEventListener("click", () => movePlayer(play
 window.addEventListener("resize", () => {
   location.reload(); // simplest approach, regenerates maze at new size
 });
+
