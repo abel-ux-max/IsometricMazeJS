@@ -28,9 +28,10 @@ bg.style.height = (window.innerHeight / 1.2) + "px";
 let xO = bgw * 0.5;
 let yO = bgh * 0.1;
 let cellSize = isMobile ? 22 : 44;
-let perspective = 0.8
-;
+let perspective = 0.8;
 let grid = [];
+let timerSecond;
+let timerInterval;
 
 const colorOptions = [
   { label: "Gold", value: "#FFD700" },
@@ -39,6 +40,8 @@ const colorOptions = [
   { label: "Pink", value: "#FF69B4" },
   { label: "Green", value: "#71d171" },
 ];
+
+
 
 Swal.fire({
   title: "MAZE GAME",
@@ -76,7 +79,11 @@ Swal.fire({
   }
 }).then((result) => {
   player.color = result.value; // setting to the selected colour before initializing the player and maze
-  
+  timerSeconds = 0;
+  timerInterval = setInterval(() => {
+    timerSeconds++;
+    document.getElementById("timer").textContent = `Time: ${timerSeconds}s`;
+  }, 1000);
   initMaze();
 });
 
@@ -496,7 +503,7 @@ function movePlayer(newX, newY) {
 
     // Check if reached end after rendering
     if (player.x === endPoint.x && player.y === endPoint.y) {
-  
+      stopTimer();
     Swal.fire({
       title: "🏆 MAZE COMPLETE!",
       html: `
@@ -553,16 +560,14 @@ function handleKey(e) {
 }
 
 // Timer
-  let timerSeconds = 0;
-  let timerInterval = setInterval(() => {
-    timerSeconds++;
-    document.getElementById("timer").textContent = `Time: ${timerSeconds}s`;
-  }, 1000);
+  
 
-
+function stopTimer() {
+  clearInterval(timerInterval);
+}
 
 function resetTimer() {
-  timerSeconds = 0;
+  timerSeconds = -1;
   clearInterval(timerInterval);
   timerInterval = setInterval(() => {
     timerSeconds++;

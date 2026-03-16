@@ -43,13 +43,22 @@ body {
   margin: 0 auto;
   
 }
-#ui {
+#ui-r {
   position: fixed;
   bottom: 20px;
   right: 20px;
   z-index: 10;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+#ui-l {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 10;
+  display: flex;
   align-items: center;
   gap: 12px;
 }
@@ -74,7 +83,7 @@ body {
   font-family: "Audiowide", sans-serif;
   cursor: pointer;
   font-size: 1em;
-   -webkit-user-select: none; /* Safari */
+  -webkit-user-select: none; /* Safari */
   -ms-user-select: none; /* IE 10 and IE 11 */
   user-select: none; /* Standard syntax */
  
@@ -90,7 +99,7 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 4px;
-   -webkit-user-select: none; /* Safari */
+  -webkit-user-select: none; /* Safari */
   -ms-user-select: none; /* IE 10 and IE 11 */
   user-select: none; /* Standard syntax */
 }
