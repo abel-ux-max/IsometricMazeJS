@@ -10,10 +10,10 @@ offScreenCVS.height = 30;
 //---------Canvas as Background-----------//
 const isMobile = window.innerWidth <= 768;
 let bg = document.querySelector(".bg"),
-bgCtx = bg.getContext("2d"),
+  bgCtx = bg.getContext("2d"),
 
-//sharpen * 2.5
-bgw = (bg.width = window.innerWidth * 2.5);
+  //sharpen * 2.5
+  bgw = (bg.width = window.innerWidth * 2.5);
 bgh = (bg.height = window.innerHeight * 2.5);
 bg.style.width = (window.innerWidth / 1.2) + "px";
 bg.style.height = (window.innerHeight / 1.2) + "px";
@@ -88,10 +88,10 @@ Swal.fire({
 });
 
 
- let player = {
+let player = {
   x: 1,
   y: 1,
-  color:  "#71d171"  // default to original green if somehow no selection;
+  color: "#71d171"  // default to original green if somehow no selection;
 }
 
 let startPoint = {
@@ -304,37 +304,37 @@ function get2DArray() {
 }
 
 function initMaze() {
-  
-let mazeData = generateEllerMaze();
-get2DArray();
-// Set start and end points based on generated entrance/exit
-startPoint.x = mazeData.entranceX;
-startPoint.y = 0;
-endPoint.x = mazeData.exitX;
-endPoint.y = offScreenCVS.height;
 
-// Ensure entrance and exit walls are removed
-grid[startPoint.y][startPoint.x].color = "transparent";
-grid[endPoint.y][endPoint.x].color = "transparent";
+  let mazeData = generateEllerMaze();
+  get2DArray();
+  // Set start and end points based on generated entrance/exit
+  startPoint.x = mazeData.entranceX;
+  startPoint.y = 0;
+  endPoint.x = mazeData.exitX;
+  endPoint.y = offScreenCVS.height;
 
-// Debug: Log entrance and exit info
-console.log("=== MAZE GENERATION DEBUG ===");
-console.log("Entrance at:", startPoint.x, startPoint.y, "| Color:", grid[startPoint.y][startPoint.x].color);
-console.log("Exit at:", endPoint.x, endPoint.y, "| Color:", grid[endPoint.y][endPoint.x].color);
+  // Ensure entrance and exit walls are removed
+  grid[startPoint.y][startPoint.x].color = "transparent";
+  grid[endPoint.y][endPoint.x].color = "transparent";
 
-// Reset player to start position
-player.x = startPoint.x;
-player.y = startPoint.y;
+  // Debug: Log entrance and exit info
+  console.log("=== MAZE GENERATION DEBUG ===");
+  console.log("Entrance at:", startPoint.x, startPoint.y, "| Color:", grid[startPoint.y][startPoint.x].color);
+  console.log("Exit at:", endPoint.x, endPoint.y, "| Color:", grid[endPoint.y][endPoint.x].color);
 
-// Mark player in grid at spawn location
-grid[player.y][player.x].color = player.color;
+  // Reset player to start position
+  player.x = startPoint.x;
+  player.y = startPoint.y;
 
-console.log("Player spawned at:", player.x, player.y, "| Color:", player.color);
-console.log("=========================");
+  // Mark player in grid at spawn location
+  grid[player.y][player.x].color = player.color;
+
+  console.log("Player spawned at:", player.x, player.y, "| Color:", player.color);
+  console.log("=========================");
 
 
-drawMaze();
-resetTimer();
+  drawMaze();
+  resetTimer();
 
 }
 /*draw2DMaze();*/
@@ -344,6 +344,7 @@ function drawMaze() {
     for (let x = 0; x < grid[y].length; x++) {
       let xPos = xO + cellSize * (x - y);
       let yPos = yO + perspective * (cellSize * (x + y));
+      
       if (grid[y][x].color === "transparent") {
         continue;
       }
@@ -363,6 +364,7 @@ function drawMaze() {
   }
 
 }
+
 
 function draw2DMaze() { // Made for testing the 3d maze 
   // Draw 2D overhead view of maze in top-left corner
@@ -487,7 +489,7 @@ function movePlayer(newX, newY) {
   if (
     grid[newY] &&
     grid[newY][newX] &&
-    grid[newY][newX].color === "transparent"
+    (grid[newY][newX].color === "transparent" || grid[newY][newX].color === "#ffffff")
   ) {
     // restore old position to transparent
     grid[player.y][player.x].color = "transparent";
@@ -504,9 +506,9 @@ function movePlayer(newX, newY) {
     // Check if reached end after rendering
     if (player.x === endPoint.x && player.y === endPoint.y) {
       stopTimer();
-    Swal.fire({
-      title: "🏆 MAZE COMPLETE!",
-      html: `
+      Swal.fire({
+        title: "🏆 MAZE COMPLETE!",
+        html: `
         <p style="font-family:'Audiowide',sans-serif; color:#71d171; font-size:1.1em;">
           You escaped in <strong style="color:white">${timerSeconds}s</strong>
         </p>
@@ -514,34 +516,34 @@ function movePlayer(newX, newY) {
           Think you can beat that?
         </p>
       `,
-      background: "#1e2127",
-      color: "#71d171",
-      confirmButtonText: "PLAY AGAIN",
-      confirmButtonColor: "#71d171",
-      showCancelButton: true,
-      cancelButtonText: "QUIT",
-      cancelButtonColor: "#444",
-      allowOutsideClick: false,
-    }).then((result) => {
-      if (result.isConfirmed) {
-        grid[player.y][player.x].color = "transparent";
-        mazeData = generateEllerMaze();
-        get2DArray();
-        startPoint.x = mazeData.entranceX;
-        startPoint.y = 0;
-        endPoint.x = mazeData.exitX;
-        endPoint.y = offScreenCVS.height;
-        grid[startPoint.y][startPoint.x].color = "transparent";
-        grid[endPoint.y][endPoint.x].color = "transparent";
-        player.x = startPoint.x;
-        player.y = startPoint.y;
-        grid[player.y][player.x].color = player.color;
-        bgCtx.clearRect(0, 0, bgw, bgh);
-        drawMaze();
-        resetTimer();
-      }
-    });
-}
+        background: "#1e2127",
+        color: "#71d171",
+        confirmButtonText: "PLAY AGAIN",
+        confirmButtonColor: "#71d171",
+        showCancelButton: true,
+        cancelButtonText: "QUIT",
+        cancelButtonColor: "#444",
+        allowOutsideClick: false,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          grid[player.y][player.x].color = "transparent";
+          mazeData = generateEllerMaze();
+          get2DArray();
+          startPoint.x = mazeData.entranceX;
+          startPoint.y = 0;
+          endPoint.x = mazeData.exitX;
+          endPoint.y = offScreenCVS.height;
+          grid[startPoint.y][startPoint.x].color = "transparent";
+          grid[endPoint.y][endPoint.x].color = "transparent";
+          player.x = startPoint.x;
+          player.y = startPoint.y;
+          grid[player.y][player.x].color = player.color;
+          bgCtx.clearRect(0, 0, bgw, bgh);
+          drawMaze();
+          resetTimer();
+        }
+      });
+    }
   }
 }
 
@@ -560,7 +562,7 @@ function handleKey(e) {
 }
 
 // Timer
-  
+
 
 function stopTimer() {
   clearInterval(timerInterval);
@@ -605,3 +607,70 @@ window.addEventListener("resize", () => {
   location.reload(); // simplest approach, regenerates maze at new size
 });
 
+
+let perspectiveDir = 1;
+
+function animateLoop() {
+  perspective += 0.02 * perspectiveDir;
+
+  if (perspective >= 0.8) perspectiveDir = -1; // start going down
+  if (perspective <= 0.2) perspectiveDir = 1;  // start going up
+
+  bgCtx.clearRect(0, 0, bgw, bgh);
+  drawMaze();
+
+  requestAnimationFrame(animateLoop);
+}
+animateLoop();
+
+document.getElementById("hint-btn").addEventListener("click", hint);
+
+
+function getSolutionPath(startX, startY) {
+  let visited = [];
+  for (let i = 0; i < grid.length; i++) {
+    visited[i] = [];
+    for (let j = 0; j < grid[i].length; j++) {
+      visited[i][j] = false;
+    }
+  }
+
+  let path = [];
+
+  function solve(x, y) {
+    if (y < 0 || y >= grid.length || x < 0 || x >= grid[y].length) return false;
+    if (grid[y][x].color !== "transparent" && grid[y][x].color !== player.color) return false;
+    if (visited[y][x]) return false;
+    visited[y][x] = true;
+    path.push({ x, y });
+    if (x === endPoint.x && y === endPoint.y) return true;
+    if (solve(x, y - 1)) return true;
+    if (solve(x, y + 1)) return true;
+    if (solve(x - 1, y)) return true;
+    if (solve(x + 1, y)) return true;
+    path.pop();
+    return false;
+  }
+
+  return solve(startX, startY) ? path : null;
+}
+
+function isMazeSolvable() {
+  return getSolutionPath(startPoint.x, startPoint.y) !== null;
+}
+
+function hint() {
+  let path = getSolutionPath(player.x, player.y);
+  if (!path) return;
+
+  timerSeconds += 10;
+  document.getElementById("timer").textContent = `Time: ${timerSeconds}s`;
+
+  let steps = path.slice(1, 7);
+    steps.forEach(cell => {
+      grid[cell.y][cell.x].color = "#ffffff";
+    });
+    bgCtx.clearRect(0, 0, bgw, bgh);
+      drawMaze();
+
+}
