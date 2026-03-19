@@ -4,8 +4,11 @@ let offScreenCVS = document.createElement("canvas");
 let offScreenCTX = offScreenCVS.getContext("2d");
 
 //Set the dimensions of the drawing canvas
-offScreenCVS.width = 30;
-offScreenCVS.height = 30;
+let size = 30;
+offScreenCVS.width = size;
+offScreenCVS.height = size;
+
+let mazeColor = "#3e9e3e";
 
 //---------Canvas as Background-----------//
 const isMobile = window.innerWidth <= 768;
@@ -73,11 +76,14 @@ Swal.fire({
         document.getElementById("picked-label").textContent = el.title;
       });
     });
+
   },
   preConfirm: () => {
     return window._selectedColor; // return chosen colour
   }
 }).then((result) => {
+
+  backgroundMusicSfx();
   player.color = result.value; // setting to the selected colour before initializing the player and maze
   timerSeconds = 0;
   timerInterval = setInterval(() => {
@@ -269,7 +275,7 @@ function get2DArray() {
     grid[i] = [];
     for (let j = 0; j < offScreenCVS.width + 1; j++) {
       grid[i][j] = {
-        color: "#3e9e3e",
+        color: mazeColor,
         cost: 1,
         type: "free",
         x: j,
@@ -294,7 +300,7 @@ function get2DArray() {
     switch (color) {
       case "rgba(0, 0, 0, 255)":
         //black pixel
-        grid[y][x].color = "#3e9e3e";
+        grid[y][x].color = mazeColor;
         break;
       default:
         //transparent pixel
@@ -344,7 +350,7 @@ function drawMaze() {
     for (let x = 0; x < grid[y].length; x++) {
       let xPos = xO + cellSize * (x - y);
       let yPos = yO + perspective * (cellSize * (x + y));
-      
+
       if (grid[y][x].color === "transparent") {
         continue;
       }
@@ -494,28 +500,47 @@ function movePlayer(newX, newY) {
     // restore old position to transparent
     grid[player.y][player.x].color = "transparent";
 
-    // move player
+    // move players
     player.x = newX;
     player.y = newY;
 
     grid[player.y][player.x].color = player.color;
     bgCtx.clearRect(0, 0, bgw, bgh);
     drawMaze();
+    moveSfx();
     /*draw2DMaze();*/
 
     // Check if reached end after rendering
     if (player.x === endPoint.x && player.y === endPoint.y) {
+
+      winSfx();
+      if (isHardMode) {
+        bgCtx.clearRect(0, 0, bgw, bgh);
+        perspective = 0.8;
+        toggleHardMode();
+        document.getElementById("hard-mode").disabled = false;
+      }
       stopTimer();
       Swal.fire({
         title: "🏆 MAZE COMPLETE!",
         html: `
-        <p style="font-family:'Audiowide',sans-serif; color:#71d171; font-size:1.1em;">
-          You escaped in <strong style="color:white">${timerSeconds}s</strong>
-        </p>
-        <p style="font-family:'Audiowide',sans-serif; color:#aaa; font-size:0.85em; margin-top:8px;">
-          Think you can beat that?
-        </p>
-      `,
+    <p style="font-family:'Audiowide',sans-serif; color:#71d171; font-size:1.1em;">
+      You escaped in <strong style="color:white">${timerSeconds}s</strong>
+    </p>
+    <p style="font-family:'Audiowide',sans-serif; color:#aaa; font-size:0.85em; margin-top:8px;">
+      Think you can beat that?
+    </p>
+  `,
+        footer: `<button id="win-credits-btn" style="
+   background:transparent;
+    border: 2px solid #71d171;
+    color:#71d171;
+    font-family:'Audiowide',sans-serif;
+    padding:0.4em 1em;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:0.85em;
+  ">Credits</button>`,
         background: "#1e2127",
         color: "#71d171",
         confirmButtonText: "PLAY AGAIN",
@@ -524,6 +549,39 @@ function movePlayer(newX, newY) {
         cancelButtonText: "QUIT",
         cancelButtonColor: "#444",
         allowOutsideClick: false,
+        didOpen: () => {
+          document.getElementById("win-credits-btn").addEventListener("click", () => {
+            Swal.fire({
+              title: "CREDITS",
+              html: `
+          <div style="display:flex; flex-direction:column; gap:12px; font-family:'Audiowide',sans-serif;">
+            <p style="margin:0; color:#71d171;">
+              Design & Development: <strong style="color:white">Abel Elersič</strong>
+            </p>
+            <hr style="border-color:#71d171; opacity:0.3;">
+            <p style="margin:0; color:#aaa; font-size:0.85em;">Isometric maze rendering inspired by:</p>
+            <a href="https://cantwell-tom.medium.com/isometric-maze-on-html-canvas-c560afb8430a"
+               target="_blank"
+               style="color:#71d171; font-weight:bold; text-decoration:none; font-size:0.85em;">
+              Tom Cantwell — Isometric Maze on HTML Canvas
+            </a>
+            <hr style="border-color:#71d171; opacity:0.3;">
+            <p style="margin:0; color:#aaa; font-size:0.85em;">Socials</p>
+            <div style="display:flex; gap:16px; justify-content:center;">
+              <a href="https://www.instagram.com/abelelersic" target="_blank"
+                 style="color:#71d171; font-weight:bold; text-decoration:none;">Instagram</a>
+              <a href="https://github.com/abel-ux-max" target="_blank"
+                 style="color:#71d171; font-weight:bold; text-decoration:none;">GitHub</a>
+            </div>
+          </div>
+        `,
+              background: "#1e2127",
+              color: "#71d171",
+              confirmButtonText: "BACK",
+              confirmButtonColor: "#71d171",
+            });
+          });
+        }
       }).then((result) => {
         if (result.isConfirmed) {
           grid[player.y][player.x].color = "transparent";
@@ -579,6 +637,13 @@ function resetTimer() {
 
 // New maze button
 document.getElementById("new-maze-btn").addEventListener("click", () => {
+  if (isHardMode) {
+    bgCtx.clearRect(0, 0, bgw, bgh);
+    perspective = 0.8;
+    toggleHardMode();
+    document.getElementById("hard-mode").disabled = false;
+  }
+
   grid[player.y][player.x].color = "transparent";
   mazeData = generateEllerMaze();
   get2DArray();
@@ -612,16 +677,13 @@ let perspectiveDir = 1;
 
 function animateLoop() {
   perspective += 0.02 * perspectiveDir;
-
-  if (perspective >= 0.8) perspectiveDir = -1; // start going down
-  if (perspective <= 0.2) perspectiveDir = 1;  // start going up
-
+  if (perspective >= 0.8) perspectiveDir = -1;
+  if (perspective <= 0.6) perspectiveDir = 1;
   bgCtx.clearRect(0, 0, bgw, bgh);
   drawMaze();
-
-  requestAnimationFrame(animateLoop);
+  animationId = requestAnimationFrame(animateLoop); // store the ID
 }
-animateLoop();
+//animateLoop();
 
 document.getElementById("hint-btn").addEventListener("click", hint);
 
@@ -660,6 +722,7 @@ function isMazeSolvable() {
 }
 
 function hint() {
+
   let path = getSolutionPath(player.x, player.y);
   if (!path) return;
 
@@ -667,10 +730,52 @@ function hint() {
   document.getElementById("timer").textContent = `Time: ${timerSeconds}s`;
 
   let steps = path.slice(1, 7);
-    steps.forEach(cell => {
-      grid[cell.y][cell.x].color = "#ffffff";
-    });
-    bgCtx.clearRect(0, 0, bgw, bgh);
-      drawMaze();
+  hintSfx();
+  steps.forEach(cell => {
+    grid[cell.y][cell.x].color = "#ffffff";
+  });
+  bgCtx.clearRect(0, 0, bgw, bgh);
+  drawMaze();
 
 }
+
+
+let isHardMode = false;
+let animationId = null;
+
+function toggleHardMode() {
+  isHardMode = !isHardMode;
+  mazeColor = isHardMode ? "#fd2626" : "#3e9e3e";
+
+  if (isHardMode) {
+    hardModeSfx();
+  } else {
+    hardModeSound.pause();
+    hardModeSound.currentTime = 0;
+  }
+
+  document.getElementById("hard-mode").disabled = isHardMode;
+
+  for (let y = 0; y < grid.length; y++) {
+    for (let x = 0; x < grid[y].length; x++) {
+      let cell = grid[y][x];
+      if (cell.color !== "transparent" &&
+        cell.color !== player.color &&
+        cell.color !== "#ffffff") {
+        cell.color = mazeColor;
+      }
+    }
+  }
+
+  if (isHardMode) {
+    animateLoop();
+  } else {
+    cancelAnimationFrame(animationId);
+    perspective = 0.8;
+    bgCtx.clearRect(0, 0, bgw, bgh);
+    drawMaze();
+  }
+}
+
+document.getElementById("hard-mode").addEventListener("click", toggleHardMode);
+

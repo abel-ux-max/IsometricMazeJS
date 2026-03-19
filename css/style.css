@@ -147,3 +147,35 @@ body {
   background-color: #FFD700;
   color: #1e2127;
 }
+
+#hard-mode {
+  background-color: #1e2127;
+  color: #fd2626;
+  border: 2px solid #fd2626;
+  border-radius: 6px;
+  padding: 0.5em 1.5em;
+  font-family: "Audiowide", sans-serif;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+#hard-mode:hover {
+  background-color: #fd2626;
+  color: #1e2127;
+}
+
+#openCredits {
+  background-color: #1e2127;
+  color: #71d171;
+  border: 2px solid #71d171;
+  border-radius: 6px;
+  padding: 0.5em 0.5em;
+  font-family: "Audiowide", sans-serif;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+#openCredits:hover {
+  background-color: #71d171;
+  color: #1e2127;
+}
